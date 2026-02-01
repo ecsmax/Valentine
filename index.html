@@ -4,22 +4,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Valentine 💘</title>
+
   <style>
     :root{
       --bg1:#fff1f6;
       --bg2:#ffe4ec;
       --cream:#fff7ee;
       --pink:#ff5fa2;
-      --red:#ff3b6a;
       --text:#4a2b33;
+
+      /* spacing rules */
+      --edge-pad: 16px;                  /* 12–16px */
+      --gap-min: 24px;                   /* min distance to YES */
+      --bottom-toolbar-fallback: 72px;   /* extra safety for iOS Safari */
 
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-right: env(safe-area-inset-right, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --safe-left: env(safe-area-inset-left, 0px);
-
-      --edge-pad: 14px; /* 12–16 px */
-      --gap-min: 24px;
     }
 
     *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
@@ -36,42 +38,31 @@
         linear-gradient(180deg, var(--bg1), var(--bg2));
     }
 
-    /* Soft hearts background */
-    .hearts-bg{
-      position:fixed; inset:0;
-      pointer-events:none;
-      overflow:hidden;
-      opacity:.55;
-      filter: blur(.1px);
-    }
+    /* floating background hearts */
+    .hearts-bg{ position:fixed; inset:0; pointer-events:none; overflow:hidden; opacity:.55; z-index:1; }
     .heart{
-      position:absolute;
-      width:14px; height:14px;
+      position:absolute; width:14px; height:14px;
       transform: rotate(45deg);
       animation: floatUp linear infinite;
-      opacity:.0;
+      opacity:0;
+      background: rgba(255, 95, 162, .26);
+      border-radius: 3px;
     }
     .heart::before, .heart::after{
-      content:"";
-      position:absolute;
-      width:14px; height:14px;
-      background: rgba(255, 95, 162, .35);
-      border-radius: 50%;
+      content:""; position:absolute; width:14px; height:14px;
+      background: rgba(255, 95, 162, .26);
+      border-radius:50%;
     }
     .heart::before{ left:-7px; top:0; }
     .heart::after{ left:0; top:-7px; }
-    .heart{
-      background: rgba(255, 95, 162, .35);
-      border-radius: 3px;
-    }
     @keyframes floatUp{
-      0%   { transform: translate3d(0, 40px, 0) rotate(45deg) scale(.9); opacity:0; }
-      10%  { opacity:.55; }
-      60%  { opacity:.35; }
-      100% { transform: translate3d(0, -120vh, 0) rotate(45deg) scale(1.25); opacity:0; }
+      0%{ transform: translate3d(0, 40px, 0) rotate(45deg) scale(.9); opacity:0; }
+      12%{ opacity:.55; }
+      60%{ opacity:.30; }
+      100%{ transform: translate3d(0, -120vh, 0) rotate(45deg) scale(1.25); opacity:0; }
     }
 
-    /* Center card */
+    /* main card */
     .wrap{
       position:relative;
       height:100%;
@@ -83,30 +74,26 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      z-index:2;
     }
     .card{
       width:min(520px, 100%);
       padding:22px 18px 18px;
       border-radius:22px;
-      background: rgba(255,255,255,.55);
+      background: rgba(255,255,255,.56);
       border: 1px solid rgba(255,255,255,.65);
       box-shadow: 0 18px 60px rgba(255, 59, 106, .12);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       text-align:center;
     }
-
     h1{
-      margin:8px 8px 16px;
+      margin:8px 8px 12px;
       font-size: clamp(26px, 6.3vw, 40px);
       line-height:1.08;
       letter-spacing:-.02em;
     }
-    .sub{
-      margin:0 8px 18px;
-      font-size:14px;
-      opacity:.75;
-    }
+    .sub{ margin:0 8px 14px; font-size:14px; opacity:.75; }
 
     .btn-row{
       position:relative;
@@ -118,8 +105,7 @@
     }
 
     button{
-      appearance:none;
-      border:none;
+      appearance:none; border:none;
       border-radius:18px;
       padding:16px 18px;
       min-width: 140px;
@@ -139,26 +125,21 @@
     }
     .yes:active{ transform: translateY(1px) scale(.99); }
 
-    /* The No button is fixed + animated via transform */
+    /* NO button: always present, always flees */
     .no{
-      position:fixed;
-      left:0; top:0; /* transform controls actual position */
+      position:fixed; left:0; top:0;
       background: linear-gradient(180deg, #ffe9f1, #ffd7e6);
       color:#7a2b3e;
       border: 1px solid rgba(255, 95, 162, .22);
       box-shadow: 0 10px 25px rgba(255, 59, 106, .12);
-      transition: transform 220ms cubic-bezier(.12,.82,.2,1); /* ease-out-ish */
+      transition: transform 240ms cubic-bezier(.12,.82,.2,1);
       z-index: 20;
     }
-    .no:active{ transform: translateZ(0); } /* do nothing */
 
-    /* Celebration hearts */
-    .burst-layer{
-      position:fixed; inset:0;
-      pointer-events:none;
-      overflow:hidden;
-      z-index: 30;
-    }
+    .tiny{ margin-top:10px; font-size:12px; opacity:.55; }
+
+    /* tiny heart burst (optional extra) */
+    .burst-layer{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:30; }
     .burst{
       position:absolute;
       font-size: 18px;
@@ -167,18 +148,67 @@
       opacity:0;
     }
     @keyframes burstFly{
-      0%   { transform: translate3d(0,0,0) scale(.7); opacity:0; }
-      10%  { opacity:1; }
-      100% { transform: translate3d(var(--dx), var(--dy), 0) rotate(var(--rot)) scale(1.25); opacity:0; }
+      0%{ transform: translate3d(0,0,0) scale(.7); opacity:0; }
+      10%{ opacity:1; }
+      100%{ transform: translate3d(var(--dx), var(--dy), 0) rotate(var(--rot)) scale(1.25); opacity:0; }
     }
 
-    .tiny{
-      margin-top:10px;
-      font-size:12px;
-      opacity:.55;
+    /* GIF overlay with fly-towards animation */
+    .overlay{
+      position:fixed; inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:
+        calc(14px + var(--safe-top))
+        calc(14px + var(--safe-right))
+        calc(14px + var(--safe-bottom))
+        calc(14px + var(--safe-left));
+      background: rgba(0,0,0,.28);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 40;
+      perspective: 900px;
+      transform-style: preserve-3d;
     }
+    .overlay.show{ display:flex; }
+
+    .overlay-card{
+      width:min(680px, 96vw);
+      border-radius:22px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(255,255,255,.78);
+      box-shadow: 0 22px 80px rgba(0,0,0,.22);
+      overflow:hidden;
+      transform: translate3d(0, 18px, -140px) scale(.56) rotateX(10deg);
+      opacity:0;
+    }
+    .overlay-card.fly-in{
+      animation: flyIn 520ms cubic-bezier(.10,.92,.18,1) forwards;
+    }
+    @keyframes flyIn{
+      0%{ transform: translate3d(0, 18px, -140px) scale(.56) rotateX(10deg); opacity:0; }
+      45%{ opacity:1; }
+      100%{ transform: translate3d(0, 0, 0) scale(1) rotateX(0deg); opacity:1; }
+    }
+
+    .gif{ width:100%; max-height: 62vh; object-fit: cover; display:block; }
+
+    .overlay-body{ padding:14px 16px 16px; text-align:center; }
+    .overlay-title{ margin:6px 0 8px; font-size:18px; font-weight:800; }
+    .overlay-text{ opacity:.75; font-size:14px; }
+    .overlay-actions{ display:flex; justify-content:center; margin-top:10px; }
+    .close{
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(255, 95, 162, .22);
+      color:#7a2b3e;
+      box-shadow: 0 10px 25px rgba(0,0,0,.08);
+      min-width: 180px;
+    }
+    .close:active{ transform: translateY(1px) scale(.99); }
   </style>
 </head>
+
 <body>
   <div class="hearts-bg" aria-hidden="true" id="heartsBg"></div>
   <div class="burst-layer" aria-hidden="true" id="burstLayer"></div>
@@ -190,7 +220,6 @@
 
       <div class="btn-row" id="btnRow">
         <button class="yes" id="yesBtn">💕 Yes</button>
-        <!-- NO button is positioned with JS (fixed) -->
         <button class="no" id="noBtn" aria-disabled="true">💔 No</button>
       </div>
 
@@ -198,17 +227,50 @@
     </section>
   </main>
 
+  <!-- GIF overlay -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="overlay-card" id="overlayCard">
+      <img class="gif" id="loveGif" alt="Funny love gif" />
+      <div class="overlay-body">
+        <div class="overlay-title" id="overlayTitle">Yay! ❤️ I knew it!</div>
+        <div class="overlay-text" id="overlayText">Now come here. 🥹</div>
+        <div class="overlay-actions">
+          <button class="close" id="closeBtn">Okay 💘</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mini pop sound (base64 WAV, no external files) -->
+  <audio id="popSound" preload="auto">
+    <source type="audio/wav" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" />
+  </audio>
+
   <script>
     (() => {
-      const heartsBg = document.getElementById('heartsBg');
+      const heartsBg   = document.getElementById('heartsBg');
       const burstLayer = document.getElementById('burstLayer');
-      const yesBtn = document.getElementById('yesBtn');
-      const noBtn  = document.getElementById('noBtn');
-      const question = document.getElementById('question');
-      const sub = document.getElementById('sub');
-      const btnRow = document.getElementById('btnRow');
+      const yesBtn     = document.getElementById('yesBtn');
+      const noBtn      = document.getElementById('noBtn');
+      const question   = document.getElementById('question');
+      const sub        = document.getElementById('sub');
+      const btnRow     = document.getElementById('btnRow');
 
-      // --- Background hearts (lightweight, CSS animated) ---
+      const overlay    = document.getElementById('overlay');
+      const overlayCard= document.getElementById('overlayCard');
+      const closeBtn   = document.getElementById('closeBtn');
+      const loveGif    = document.getElementById('loveGif');
+      const popSound   = document.getElementById('popSound');
+
+      // 4 GIF options (random each Yes click)
+      const GIFS = [
+        "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif",
+        "https://media.giphy.com/media/3ohzdIuqJoo8QdKlnW/giphy.gif",
+        "https://media.giphy.com/media/l0HlBO7eyXzSZkJri/giphy.gif",
+        "https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
+      ];
+
+      // --- Background hearts ---
       const HEARTS = 18;
       function spawnBgHearts(){
         heartsBg.innerHTML = '';
@@ -216,96 +278,95 @@
         for(let i=0;i<HEARTS;i++){
           const h = document.createElement('div');
           h.className = 'heart';
-          const left = Math.random() * vw;
+          const left  = Math.random() * vw;
           const delay = Math.random() * 6;
-          const dur = 6 + Math.random() * 8;
+          const dur   = 6 + Math.random() * 8;
           const scale = 0.7 + Math.random() * 1.1;
+          const alpha = 0.18 + Math.random() * 0.25;
+
           h.style.left = `${left}px`;
           h.style.bottom = `${-40 - Math.random()*120}px`;
           h.style.animationDelay = `${delay}s`;
           h.style.animationDuration = `${dur}s`;
           h.style.transform = `rotate(45deg) scale(${scale})`;
-          // vary tint slightly
-          const a = 0.22 + Math.random() * 0.25;
-          h.style.setProperty('--a', a);
-          // quick inline tweak via background alpha
-          h.style.background = `rgba(255, 95, 162, ${a})`;
-          h.style.setProperty('opacity', '1');
-          // update pseudo colors via CSS variables? easiest: keep base and accept slight mismatch
+          h.style.background = `rgba(255, 95, 162, ${alpha})`;
           heartsBg.appendChild(h);
         }
       }
 
-      // --- No button evasion logic ---
+      // --- Visible viewport box for iOS Safari (uses visualViewport) ---
+      function getViewportBox(){
+        const pad =  parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--edge-pad')) || 16;
+        const fallbackBottom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bottom-toolbar-fallback')) || 72;
+
+        const vv = window.visualViewport;
+        let left = pad, top = pad, right, bottom;
+
+        if (vv) {
+          left   = pad + (vv.offsetLeft || 0);
+          top    = pad + (vv.offsetTop  || 0);
+          right  = (vv.width  + (vv.offsetLeft || 0)) - pad;
+          bottom = (vv.height + (vv.offsetTop  || 0)) - pad;
+        } else {
+          right  = window.innerWidth - pad;
+          bottom = (window.innerHeight - fallbackBottom) - pad;
+        }
+
+        // Safe area insets
+        left   += parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-left')) || 0;
+        top    += parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top')) || 0;
+        right  -= parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-right')) || 0;
+        bottom -= (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom')) || 0);
+
+        // Extra bottom cushion so NO never sits under Safari bar
+        bottom -= 16;
+
+        return { left, top, right, bottom, width: right-left, height: bottom-top };
+      }
+
+      // --- NO button flee logic ---
       let noW = 0, noH = 0;
-      let posX = 0, posY = 0; // transform translate
+      let posX = 0, posY = 0;
       let ticking = false;
 
-      const edgePad = () => {
-        const r = getComputedStyle(document.documentElement);
-        const base = parseFloat(r.getPropertyValue('--edge-pad')) || 14;
-        // include safe-area insets (approx by reading env via padding on wrap; we just add base here)
-        return base;
-      };
-
-      function viewport(){
-        // iOS Safari quirks: innerWidth/innerHeight are fine for fixed overlays.
-        return { w: window.innerWidth, h: window.innerHeight };
-      }
-
-      function rectFromXY(x, y, w, h){
-        return { left:x, top:y, right:x+w, bottom:y+h, width:w, height:h };
-      }
+      function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+      function rectFromXY(x, y, w, h){ return { left:x, top:y, right:x+w, bottom:y+h, width:w, height:h }; }
 
       function getYesRect(){
         const r = yesBtn.getBoundingClientRect();
         return { left:r.left, top:r.top, right:r.right, bottom:r.bottom, width:r.width, height:r.height };
       }
 
-      function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
-
       function distanceToRect(px, py, rect){
-        // distance from point to rect (0 if inside)
         const dx = Math.max(rect.left - px, 0, px - rect.right);
         const dy = Math.max(rect.top - py, 0, py - rect.bottom);
         return Math.hypot(dx, dy);
       }
 
-      function tooCloseToYes(candidateRect){
+      function tooCloseToYes(candidate){
         const yes = getYesRect();
         const gap = 24;
-
-        // inflate yes rect by gap, then check intersection with candidate
         const inflated = {
           left: yes.left - gap,
           top: yes.top - gap,
           right: yes.right + gap,
           bottom: yes.bottom + gap
         };
-        const intersects =
-          candidateRect.left < inflated.right &&
-          candidateRect.right > inflated.left &&
-          candidateRect.top < inflated.bottom &&
-          candidateRect.bottom > inflated.top;
-
-        return intersects;
+        return (
+          candidate.left < inflated.right &&
+          candidate.right > inflated.left &&
+          candidate.top < inflated.bottom &&
+          candidate.bottom > inflated.top
+        );
       }
 
-      function withinViewport(candidateRect){
-        const pad = edgePad();
-        const { w, h } = viewport();
-
-        const minX = pad + 0; // safe-area already in viewport coords; keep simple
-        const minY = pad + 0;
-        const maxX = w - pad - candidateRect.width;
-        const maxY = h - pad - candidateRect.height;
-
-        return (
-          candidateRect.left >= minX &&
-          candidateRect.top  >= minY &&
-          candidateRect.left <= maxX &&
-          candidateRect.top  <= maxY
-        );
+      function withinVisible(candidate){
+        const box = getViewportBox();
+        const minX = box.left;
+        const minY = box.top;
+        const maxX = box.right - candidate.width;
+        const maxY = box.bottom - candidate.height;
+        return (candidate.left >= minX && candidate.top >= minY && candidate.left <= maxX && candidate.top <= maxY);
       }
 
       function applyNoPosition(x, y){
@@ -313,56 +374,53 @@
         noBtn.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
       }
 
-      function placeNoInitial(){
-        // measure
+      function measureNo(){
         const r = noBtn.getBoundingClientRect();
         noW = r.width; noH = r.height;
+      }
 
+      function placeNoInitial(){
+        measureNo();
+        const box = getViewportBox();
         const rowRect = btnRow.getBoundingClientRect();
-        const { w, h } = viewport();
-        const pad = edgePad();
 
-        // Start near the button row, slightly to the right of center.
-        let x = clamp((w/2) + 40, pad, w - pad - noW);
-        let y = clamp(rowRect.top + 6, pad, h - pad - noH);
+        let x = clamp((box.left + box.width/2) + 40, box.left, box.right - noW);
+        let y = clamp(rowRect.top + 6, box.top, box.bottom - noH);
 
-        // ensure not too close to Yes initially
         let cand = rectFromXY(x, y, noW, noH);
         if(tooCloseToYes(cand)){
-          x = clamp((w/2) + 140, pad, w - pad - noW);
+          x = clamp((box.left + box.width/2) + 140, box.left, box.right - noW);
           cand = rectFromXY(x, y, noW, noH);
           if(tooCloseToYes(cand)){
-            y = clamp(rowRect.top + 80, pad, h - pad - noH);
+            y = clamp(rowRect.top + 80, box.top, box.bottom - noH);
           }
         }
-
+        x = clamp(x, box.left, box.right - noW);
+        y = clamp(y, box.top,  box.bottom - noH);
         applyNoPosition(x, y);
       }
 
       function chooseCandidate(px, py){
-        const { w, h } = viewport();
-        const pad = edgePad();
-        const minX = pad;
-        const minY = pad;
-        const maxX = w - pad - noW;
-        const maxY = h - pad - noH;
+        const box = getViewportBox();
+        const minX = box.left;
+        const minY = box.top;
+        const maxX = box.right - noW;
+        const maxY = box.bottom - noH;
 
-        const currentRect = rectFromXY(posX, posY, noW, noH);
-        const cx = currentRect.left + noW/2;
-        const cy = currentRect.top + noH/2;
+        const cx = posX + noW/2;
+        const cy = posY + noH/2;
 
-        // direction away from pointer (with jitter)
-        const vx = cx - px;
-        const vy = cy - py;
+        // Move away from pointer + jitter
+        const vx = cx - px, vy = cy - py;
         const baseAngle = Math.atan2(vy, vx);
-        const jitter = (Math.random() * 0.9 - 0.45); // +/- ~26°
+        const jitter = (Math.random() * 0.9 - 0.45);
         const angle = baseAngle + jitter;
 
-        const dist = 80 + Math.random() * 60; // 80–140 px
+        const dist = 80 + Math.random() * 60; // 80–140
         let x = posX + Math.cos(angle) * dist;
         let y = posY + Math.sin(angle) * dist;
 
-        // If that doesn't help, sometimes jump to a random safe spot (unpredictable, controlled)
+        // occasional random hop
         if(Math.random() < 0.22){
           x = minX + Math.random() * (maxX - minX);
           y = minY + Math.random() * (maxY - minY);
@@ -370,70 +428,58 @@
 
         x = clamp(x, minX, maxX);
         y = clamp(y, minY, maxY);
-
         return { x, y };
       }
 
       function moveNoAway(px, py){
-        // hard guarantee: even if "clicked", do nothing and move.
-        const attempts = 40;
+        const attempts = 60;
         for(let i=0;i<attempts;i++){
           const { x, y } = chooseCandidate(px, py);
           const cand = rectFromXY(x, y, noW, noH);
-
-          if(!withinViewport(cand)) continue;
+          if(!withinVisible(cand)) continue;
           if(tooCloseToYes(cand)) continue;
-
-          // also avoid sitting exactly on current spot
-          if(Math.hypot(x - posX, y - posY) < 30) continue;
-
+          if(Math.hypot(x - posX, y - posY) < 28) continue;
           applyNoPosition(x, y);
           return;
         }
-
-        // last-resort: put it in a far corner away from Yes
+        // fallback: farthest corner from YES
         const yes = getYesRect();
-        const { w, h } = viewport();
-        const pad = edgePad();
+        const box = getViewportBox();
         const corners = [
-          { x: pad, y: pad },
-          { x: w - pad - noW, y: pad },
-          { x: pad, y: h - pad - noH },
-          { x: w - pad - noW, y: h - pad - noH }
+          { x: box.left, y: box.top },
+          { x: box.right - noW, y: box.top },
+          { x: box.left, y: box.bottom - noH },
+          { x: box.right - noW, y: box.bottom - noH }
         ];
         corners.sort((a,b) => {
-          const da = Math.hypot((a.x+noW/2) - (yes.left+yes.width/2), (a.y+noH/2) - (yes.top+yes.height/2));
-          const db = Math.hypot((b.x+noW/2) - (yes.left+yes.width/2), (b.y+noH/2) - (yes.top+yes.height/2));
+          const da = Math.hypot((a.x+noW/2)-(yes.left+yes.width/2),(a.y+noH/2)-(yes.top+yes.height/2));
+          const db = Math.hypot((b.x+noW/2)-(yes.left+yes.width/2),(b.y+noH/2)-(yes.top+yes.height/2));
           return db - da;
         });
         applyNoPosition(corners[0].x, corners[0].y);
       }
 
       function handlePointer(px, py){
-        // only react when near / touching the No button
         const r = noBtn.getBoundingClientRect();
-        const noRect = { left:r.left, top:r.top, right:r.right, bottom:r.bottom };
-        const nearThreshold = 110; // "nähert"
-        const d = distanceToRect(px, py, { ...noRect, width:r.width, height:r.height });
-
-        if(d <= nearThreshold){
-          moveNoAway(px, py);
-        }
+        const d = distanceToRect(px, py, { left:r.left, top:r.top, right:r.right, bottom:r.bottom });
+        if(d <= 110) moveNoAway(px, py);
       }
 
       function onPointerMove(e){
-        const px = e.clientX, py = e.clientY;
         if(ticking) return;
         ticking = true;
-        requestAnimationFrame(() => {
-          handlePointer(px, py);
-          ticking = false;
-        });
+        requestAnimationFrame(() => { handlePointer(e.clientX, e.clientY); ticking = false; });
       }
 
       function onPointerDown(e){
-        // immediate dodge on attempt
-        handlePointer(e.clientX, e.clientY);
+        // If press is on/near NO, dodge immediately + block
+        const r = noBtn.getBoundingClientRect();
+        const d = distanceToRect(e.clientX, e.clientY, { left:r.left, top:r.top, right:r.right, bottom:r.bottom });
+        if(d <= 130){
+          e.preventDefault();
+          e.stopPropagation();
+          moveNoAway(e.clientX, e.clientY);
+        }
       }
 
       function onTouchMove(e){
@@ -441,19 +487,22 @@
         const t = e.touches[0];
         if(ticking) return;
         ticking = true;
-        requestAnimationFrame(() => {
-          handlePointer(t.clientX, t.clientY);
-          ticking = false;
-        });
+        requestAnimationFrame(() => { handlePointer(t.clientX, t.clientY); ticking = false; });
       }
 
       function onTouchStart(e){
         if(!e.touches || !e.touches.length) return;
         const t = e.touches[0];
-        handlePointer(t.clientX, t.clientY);
+        const r = noBtn.getBoundingClientRect();
+        const d = distanceToRect(t.clientX, t.clientY, { left:r.left, top:r.top, right:r.right, bottom:r.bottom });
+        if(d <= 130){
+          e.preventDefault();
+          e.stopPropagation();
+          moveNoAway(t.clientX, t.clientY);
+        }
       }
 
-      // Prevent any "No" activation (even if someone somehow lands a click)
+      // Safety net: any click on NO just triggers逃げる
       noBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -461,81 +510,96 @@
         moveNoAway(r.left + r.width/2, r.top + r.height/2);
       }, true);
 
-      // --- Yes click celebration ---
+      // --- YES: random GIF + fly-in + mini-sound ---
+      function pickRandomGif(){
+        return GIFS[(Math.random() * GIFS.length) | 0];
+      }
+
+      function playPop(){
+        // iOS requires user gesture; this is called inside click handler
+        try{
+          popSound.currentTime = 0;
+          popSound.play().catch(()=>{});
+        }catch(_){}
+      }
+
+      function showOverlay(){
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        // re-trigger animation
+        overlayCard.classList.remove('fly-in');
+        void overlayCard.offsetWidth;
+        overlayCard.classList.add('fly-in');
+      }
+
+      function hideOverlay(){
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+
       function burstHearts(originX, originY){
         const icons = ["❤️","💖","💘","💕","💗","💞"];
-        const count = 22;
-
+        const count = 18;
         for(let i=0;i<count;i++){
           const el = document.createElement('div');
           el.className = 'burst';
           el.textContent = icons[(Math.random()*icons.length)|0];
-
           const angle = Math.random() * Math.PI * 2;
-          const dist = 60 + Math.random()*170;
+          const dist = 60 + Math.random()*160;
           const dx = Math.cos(angle) * dist;
-          const dy = Math.sin(angle) * dist - (20 + Math.random()*70);
-
+          const dy = Math.sin(angle) * dist - (20 + Math.random()*60);
           const rot = (Math.random()*140 - 70) + "deg";
           el.style.left = `${originX}px`;
-          el.style.top = `${originY}px`;
+          el.style.top  = `${originY}px`;
           el.style.setProperty('--dx', `${dx.toFixed(0)}px`);
           el.style.setProperty('--dy', `${dy.toFixed(0)}px`);
           el.style.setProperty('--rot', rot);
-
           burstLayer.appendChild(el);
-          // cleanup
           setTimeout(() => el.remove(), 950);
         }
       }
 
-      yesBtn.addEventListener('click', (e) => {
-        const r = yesBtn.getBoundingClientRect();
-        const x = r.left + r.width/2;
-        const y = r.top + r.height/2;
-
-        burstHearts(x, y);
+      yesBtn.addEventListener('click', () => {
+        // update texts once
         question.textContent = "Yay! ❤️ I knew it!";
         sub.textContent = "Okay, now come here. 🥹";
 
-        // make background a bit more lively by respawning hearts
-        spawnBgHearts();
+        // random GIF each time
+        loveGif.src = pickRandomGif();
+
+        // fun burst + overlay + sound
+        const r = yesBtn.getBoundingClientRect();
+        burstHearts(r.left + r.width/2, r.top + r.height/2);
+        showOverlay();
+        playPop();
       });
 
-      // --- Wire pointer + touch events (iOS Safari friendly) ---
+      closeBtn.addEventListener('click', hideOverlay);
+      overlay.addEventListener('click', (e) => { if(e.target === overlay) hideOverlay(); });
+
+      // Events for NO + iOS Safari quirks
       window.addEventListener('pointermove', onPointerMove, { passive:true });
-      window.addEventListener('pointerdown', onPointerDown, { passive:true });
-      window.addEventListener('pointerenter', (e) => handlePointer(e.clientX, e.clientY), { passive:true });
-
-      // Fallback touch events
+      window.addEventListener('pointerdown', onPointerDown, { passive:false });
       window.addEventListener('touchmove', onTouchMove, { passive:true });
-      window.addEventListener('touchstart', onTouchStart, { passive:true });
+      window.addEventListener('touchstart', onTouchStart, { passive:false });
 
-      // Layout / resize
+      // Re-layout on viewport changes (Safari toolbar hide/show)
       function relayout(){
-        // temporarily disable transition for snap-to-safe
         const prev = noBtn.style.transition;
         noBtn.style.transition = 'none';
         placeNoInitial();
-        // restore transition next tick
-        requestAnimationFrame(() => { noBtn.style.transition = prev || 'transform 220ms cubic-bezier(.12,.82,.2,1)'; });
+        requestAnimationFrame(() => { noBtn.style.transition = prev || 'transform 240ms cubic-bezier(.12,.82,.2,1)'; });
       }
 
-      // init
       spawnBgHearts();
-      // wait a beat for fonts/layout
-      requestAnimationFrame(() => {
-        placeNoInitial();
-      });
+      requestAnimationFrame(placeNoInitial);
 
-      window.addEventListener('resize', () => {
-        // keep it in-bounds on rotation
-        relayout();
-        spawnBgHearts();
-      });
-
-      // If user scroll-bounces (iOS), keep stable
-      document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive:false });
+      window.addEventListener('resize', () => { relayout(); spawnBgHearts(); });
+      if(window.visualViewport){
+        window.visualViewport.addEventListener('resize', relayout);
+        window.visualViewport.addEventListener('scroll', relayout);
+      }
     })();
   </script>
 </body>
