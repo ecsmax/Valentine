@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Valentine 💘</title>
+  <style>
+    :root{
+      --bg1:#fff1f6;
+      --bg2:#ffe4ec;
+      --cream:#fff7ee;
+      --pink:#ff5fa2;
+      --red:#ff3b6a;
+      --text:#4a2b33;
+
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+
+      --edge-pad: 14px; /* 12–16 px */
+      --gap-min: 24px;
+    }
+
+    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      overflow:hidden;
+      background:
+        radial-gradient(1200px 700px at 20% 10%, var(--cream), transparent 60%),
+        radial-gradient(900px 600px at 90% 20%, #ffe0ea, transparent 55%),
+        radial-gradient(800px 600px at 50% 90%, #ffeef4, transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+
+    /* Soft hearts background */
+    .hearts-bg{
+      position:fixed; inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      opacity:.55;
+      filter: blur(.1px);
+    }
+    .heart{
+      position:absolute;
+      width:14px; height:14px;
+      transform: rotate(45deg);
+      animation: floatUp linear infinite;
+      opacity:.0;
+    }
+    .heart::before, .heart::after{
+      content:"";
+      position:absolute;
+      width:14px; height:14px;
+      background: rgba(255, 95, 162, .35);
+      border-radius: 50%;
+    }
+    .heart::before{ left:-7px; top:0; }
+    .heart::after{ left:0; top:-7px; }
+    .heart{
+      background: rgba(255, 95, 162, .35);
+      border-radius: 3px;
+    }
+    @keyframes floatUp{
+      0%   { transform: translate3d(0, 40px, 0) rotate(45deg) scale(.9); opacity:0; }
+      10%  { opacity:.55; }
+      60%  { opacity:.35; }
+      100% { transform: translate3d(0, -120vh, 0) rotate(45deg) scale(1.25); opacity:0; }
+    }
+
+    /* Center card */
+    .wrap{
+      position:relative;
+      height:100%;
+      padding:
+        calc(18px + var(--safe-top))
+        calc(18px + var(--safe-right))
+        calc(18px + var(--safe-bottom))
+        calc(18px + var(--safe-left));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .card{
+      width:min(520px, 100%);
+      padding:22px 18px 18px;
+      border-radius:22px;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(255,255,255,.65);
+      box-shadow: 0 18px 60px rgba(255, 59, 106, .12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-align:center;
+    }
+
+    h1{
+      margin:8px 8px 16px;
+      font-size: clamp(26px, 6.3vw, 40px);
+      line-height:1.08;
+      letter-spacing:-.02em;
+    }
+    .sub{
+      margin:0 8px 18px;
+      font-size:14px;
+      opacity:.75;
+    }
+
+    .btn-row{
+      position:relative;
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      padding: 10px 0 6px;
+      min-height: 86px;
+    }
+
+    button{
+      appearance:none;
+      border:none;
+      border-radius:18px;
+      padding:16px 18px;
+      min-width: 140px;
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:.01em;
+      box-shadow: 0 10px 25px rgba(0,0,0,.10);
+      transform: translateZ(0);
+      will-change: transform;
+      cursor:pointer;
+      user-select:none;
+      touch-action: manipulation;
+    }
+    .yes{
+      background: linear-gradient(180deg, #ff7ab7, var(--pink));
+      color:white;
+    }
+    .yes:active{ transform: translateY(1px) scale(.99); }
+
+    /* The No button is fixed + animated via transform */
+    .no{
+      position:fixed;
+      left:0; top:0; /* transform controls actual position */
+      background: linear-gradient(180deg, #ffe9f1, #ffd7e6);
+      color:#7a2b3e;
+      border: 1px solid rgba(255, 95, 162, .22);
+      box-shadow: 0 10px 25px rgba(255, 59, 106, .12);
+      transition: transform 220ms cubic-bezier(.12,.82,.2,1); /* ease-out-ish */
+      z-index: 20;
+    }
+    .no:active{ transform: translateZ(0); } /* do nothing */
+
+    /* Celebration hearts */
+    .burst-layer{
+      position:fixed; inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index: 30;
+    }
+    .burst{
+      position:absolute;
+      font-size: 18px;
+      animation: burstFly 900ms ease-out forwards;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.10));
+      opacity:0;
+    }
+    @keyframes burstFly{
+      0%   { transform: translate3d(0,0,0) scale(.7); opacity:0; }
+      10%  { opacity:1; }
+      100% { transform: translate3d(var(--dx), var(--dy), 0) rotate(var(--rot)) scale(1.25); opacity:0; }
+    }
+
+    .tiny{
+      margin-top:10px;
+      font-size:12px;
+      opacity:.55;
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts-bg" aria-hidden="true" id="heartsBg"></div>
+  <div class="burst-layer" aria-hidden="true" id="burstLayer"></div>
+
+  <main class="wrap">
+    <section class="card">
+      <h1 id="question">Will you be my Valentine?</h1>
+      <p class="sub" id="sub">Be honest. I can take it. (Probably.)</p>
+
+      <div class="btn-row" id="btnRow">
+        <button class="yes" id="yesBtn">💕 Yes</button>
+        <!-- NO button is positioned with JS (fixed) -->
+        <button class="no" id="noBtn" aria-disabled="true">💔 No</button>
+      </div>
+
+      <div class="tiny">Tip: try to press “No”. 😈</div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const heartsBg = document.getElementById('heartsBg');
+      const burstLayer = document.getElementById('burstLayer');
+      const yesBtn = document.getElementById('yesBtn');
+      const noBtn  = document.getElementById('noBtn');
+      const question = document.getElementById('question');
+      const sub = document.getElementById('sub');
+      const btnRow = document.getElementById('btnRow');
+
+      // --- Background hearts (lightweight, CSS animated) ---
+      const HEARTS = 18;
+      function spawnBgHearts(){
+        heartsBg.innerHTML = '';
+        const vw = Math.max(320, window.innerWidth);
+        for(let i=0;i<HEARTS;i++){
+          const h = document.createElement('div');
+          h.className = 'heart';
+          const left = Math.random() * vw;
+          const delay = Math.random() * 6;
+          const dur = 6 + Math.random() * 8;
+          const scale = 0.7 + Math.random() * 1.1;
+          h.style.left = `${left}px`;
+          h.style.bottom = `${-40 - Math.random()*120}px`;
+          h.style.animationDelay = `${delay}s`;
+          h.style.animationDuration = `${dur}s`;
+          h.style.transform = `rotate(45deg) scale(${scale})`;
+          // vary tint slightly
+          const a = 0.22 + Math.random() * 0.25;
+          h.style.setProperty('--a', a);
+          // quick inline tweak via background alpha
+          h.style.background = `rgba(255, 95, 162, ${a})`;
+          h.style.setProperty('opacity', '1');
+          // update pseudo colors via CSS variables? easiest: keep base and accept slight mismatch
+          heartsBg.appendChild(h);
+        }
+      }
+
+      // --- No button evasion logic ---
+      let noW = 0, noH = 0;
+      let posX = 0, posY = 0; // transform translate
+      let ticking = false;
+
+      const edgePad = () => {
+        const r = getComputedStyle(document.documentElement);
+        const base = parseFloat(r.getPropertyValue('--edge-pad')) || 14;
+        // include safe-area insets (approx by reading env via padding on wrap; we just add base here)
+        return base;
+      };
+
+      function viewport(){
+        // iOS Safari quirks: innerWidth/innerHeight are fine for fixed overlays.
+        return { w: window.innerWidth, h: window.innerHeight };
+      }
+
+      function rectFromXY(x, y, w, h){
+        return { left:x, top:y, right:x+w, bottom:y+h, width:w, height:h };
+      }
+
+      function getYesRect(){
+        const r = yesBtn.getBoundingClientRect();
+        return { left:r.left, top:r.top, right:r.right, bottom:r.bottom, width:r.width, height:r.height };
+      }
+
+      function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+      function distanceToRect(px, py, rect){
+        // distance from point to rect (0 if inside)
+        const dx = Math.max(rect.left - px, 0, px - rect.right);
+        const dy = Math.max(rect.top - py, 0, py - rect.bottom);
+        return Math.hypot(dx, dy);
+      }
+
+      function tooCloseToYes(candidateRect){
+        const yes = getYesRect();
+        const gap = 24;
+
+        // inflate yes rect by gap, then check intersection with candidate
+        const inflated = {
+          left: yes.left - gap,
+          top: yes.top - gap,
+          right: yes.right + gap,
+          bottom: yes.bottom + gap
+        };
+        const intersects =
+          candidateRect.left < inflated.right &&
+          candidateRect.right > inflated.left &&
+          candidateRect.top < inflated.bottom &&
+          candidateRect.bottom > inflated.top;
+
+        return intersects;
+      }
+
+      function withinViewport(candidateRect){
+        const pad = edgePad();
+        const { w, h } = viewport();
+
+        const minX = pad + 0; // safe-area already in viewport coords; keep simple
+        const minY = pad + 0;
+        const maxX = w - pad - candidateRect.width;
+        const maxY = h - pad - candidateRect.height;
+
+        return (
+          candidateRect.left >= minX &&
+          candidateRect.top  >= minY &&
+          candidateRect.left <= maxX &&
+          candidateRect.top  <= maxY
+        );
+      }
+
+      function applyNoPosition(x, y){
+        posX = x; posY = y;
+        noBtn.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+      }
+
+      function placeNoInitial(){
+        // measure
+        const r = noBtn.getBoundingClientRect();
+        noW = r.width; noH = r.height;
+
+        const rowRect = btnRow.getBoundingClientRect();
+        const { w, h } = viewport();
+        const pad = edgePad();
+
+        // Start near the button row, slightly to the right of center.
+        let x = clamp((w/2) + 40, pad, w - pad - noW);
+        let y = clamp(rowRect.top + 6, pad, h - pad - noH);
+
+        // ensure not too close to Yes initially
+        let cand = rectFromXY(x, y, noW, noH);
+        if(tooCloseToYes(cand)){
+          x = clamp((w/2) + 140, pad, w - pad - noW);
+          cand = rectFromXY(x, y, noW, noH);
+          if(tooCloseToYes(cand)){
+            y = clamp(rowRect.top + 80, pad, h - pad - noH);
+          }
+        }
+
+        applyNoPosition(x, y);
+      }
+
+      function chooseCandidate(px, py){
+        const { w, h } = viewport();
+        const pad = edgePad();
+        const minX = pad;
+        const minY = pad;
+        const maxX = w - pad - noW;
+        const maxY = h - pad - noH;
+
+        const currentRect = rectFromXY(posX, posY, noW, noH);
+        const cx = currentRect.left + noW/2;
+        const cy = currentRect.top + noH/2;
+
+        // direction away from pointer (with jitter)
+        const vx = cx - px;
+        const vy = cy - py;
+        const baseAngle = Math.atan2(vy, vx);
+        const jitter = (Math.random() * 0.9 - 0.45); // +/- ~26°
+        const angle = baseAngle + jitter;
+
+        const dist = 80 + Math.random() * 60; // 80–140 px
+        let x = posX + Math.cos(angle) * dist;
+        let y = posY + Math.sin(angle) * dist;
+
+        // If that doesn't help, sometimes jump to a random safe spot (unpredictable, controlled)
+        if(Math.random() < 0.22){
+          x = minX + Math.random() * (maxX - minX);
+          y = minY + Math.random() * (maxY - minY);
+        }
+
+        x = clamp(x, minX, maxX);
+        y = clamp(y, minY, maxY);
+
+        return { x, y };
+      }
+
+      function moveNoAway(px, py){
+        // hard guarantee: even if "clicked", do nothing and move.
+        const attempts = 40;
+        for(let i=0;i<attempts;i++){
+          const { x, y } = chooseCandidate(px, py);
+          const cand = rectFromXY(x, y, noW, noH);
+
+          if(!withinViewport(cand)) continue;
+          if(tooCloseToYes(cand)) continue;
+
+          // also avoid sitting exactly on current spot
+          if(Math.hypot(x - posX, y - posY) < 30) continue;
+
+          applyNoPosition(x, y);
+          return;
+        }
+
+        // last-resort: put it in a far corner away from Yes
+        const yes = getYesRect();
+        const { w, h } = viewport();
+        const pad = edgePad();
+        const corners = [
+          { x: pad, y: pad },
+          { x: w - pad - noW, y: pad },
+          { x: pad, y: h - pad - noH },
+          { x: w - pad - noW, y: h - pad - noH }
+        ];
+        corners.sort((a,b) => {
+          const da = Math.hypot((a.x+noW/2) - (yes.left+yes.width/2), (a.y+noH/2) - (yes.top+yes.height/2));
+          const db = Math.hypot((b.x+noW/2) - (yes.left+yes.width/2), (b.y+noH/2) - (yes.top+yes.height/2));
+          return db - da;
+        });
+        applyNoPosition(corners[0].x, corners[0].y);
+      }
+
+      function handlePointer(px, py){
+        // only react when near / touching the No button
+        const r = noBtn.getBoundingClientRect();
+        const noRect = { left:r.left, top:r.top, right:r.right, bottom:r.bottom };
+        const nearThreshold = 110; // "nähert"
+        const d = distanceToRect(px, py, { ...noRect, width:r.width, height:r.height });
+
+        if(d <= nearThreshold){
+          moveNoAway(px, py);
+        }
+      }
+
+      function onPointerMove(e){
+        const px = e.clientX, py = e.clientY;
+        if(ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          handlePointer(px, py);
+          ticking = false;
+        });
+      }
+
+      function onPointerDown(e){
+        // immediate dodge on attempt
+        handlePointer(e.clientX, e.clientY);
+      }
+
+      function onTouchMove(e){
+        if(!e.touches || !e.touches.length) return;
+        const t = e.touches[0];
+        if(ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          handlePointer(t.clientX, t.clientY);
+          ticking = false;
+        });
+      }
+
+      function onTouchStart(e){
+        if(!e.touches || !e.touches.length) return;
+        const t = e.touches[0];
+        handlePointer(t.clientX, t.clientY);
+      }
+
+      // Prevent any "No" activation (even if someone somehow lands a click)
+      noBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const r = noBtn.getBoundingClientRect();
+        moveNoAway(r.left + r.width/2, r.top + r.height/2);
+      }, true);
+
+      // --- Yes click celebration ---
+      function burstHearts(originX, originY){
+        const icons = ["❤️","💖","💘","💕","💗","💞"];
+        const count = 22;
+
+        for(let i=0;i<count;i++){
+          const el = document.createElement('div');
+          el.className = 'burst';
+          el.textContent = icons[(Math.random()*icons.length)|0];
+
+          const angle = Math.random() * Math.PI * 2;
+          const dist = 60 + Math.random()*170;
+          const dx = Math.cos(angle) * dist;
+          const dy = Math.sin(angle) * dist - (20 + Math.random()*70);
+
+          const rot = (Math.random()*140 - 70) + "deg";
+          el.style.left = `${originX}px`;
+          el.style.top = `${originY}px`;
+          el.style.setProperty('--dx', `${dx.toFixed(0)}px`);
+          el.style.setProperty('--dy', `${dy.toFixed(0)}px`);
+          el.style.setProperty('--rot', rot);
+
+          burstLayer.appendChild(el);
+          // cleanup
+          setTimeout(() => el.remove(), 950);
+        }
+      }
+
+      yesBtn.addEventListener('click', (e) => {
+        const r = yesBtn.getBoundingClientRect();
+        const x = r.left + r.width/2;
+        const y = r.top + r.height/2;
+
+        burstHearts(x, y);
+        question.textContent = "Yay! ❤️ I knew it!";
+        sub.textContent = "Okay, now come here. 🥹";
+
+        // make background a bit more lively by respawning hearts
+        spawnBgHearts();
+      });
+
+      // --- Wire pointer + touch events (iOS Safari friendly) ---
+      window.addEventListener('pointermove', onPointerMove, { passive:true });
+      window.addEventListener('pointerdown', onPointerDown, { passive:true });
+      window.addEventListener('pointerenter', (e) => handlePointer(e.clientX, e.clientY), { passive:true });
+
+      // Fallback touch events
+      window.addEventListener('touchmove', onTouchMove, { passive:true });
+      window.addEventListener('touchstart', onTouchStart, { passive:true });
+
+      // Layout / resize
+      function relayout(){
+        // temporarily disable transition for snap-to-safe
+        const prev = noBtn.style.transition;
+        noBtn.style.transition = 'none';
+        placeNoInitial();
+        // restore transition next tick
+        requestAnimationFrame(() => { noBtn.style.transition = prev || 'transform 220ms cubic-bezier(.12,.82,.2,1)'; });
+      }
+
+      // init
+      spawnBgHearts();
+      // wait a beat for fonts/layout
+      requestAnimationFrame(() => {
+        placeNoInitial();
+      });
+
+      window.addEventListener('resize', () => {
+        // keep it in-bounds on rotation
+        relayout();
+        spawnBgHearts();
+      });
+
+      // If user scroll-bounces (iOS), keep stable
+      document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive:false });
+    })();
+  </script>
+</body>
+</html>
